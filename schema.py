@@ -23,3 +23,8 @@ class RegisterModel(BaseModel):
                 "is_admin": False,
             }
         }
+
+
+class LoginModel(BaseModel):
+    username: str
+    password: str

@@ -6,4 +6,3 @@ class ErrMessages:
 
 class SucMessages:
     Suc_User_Registration = "User Registered Successfully!"
-
