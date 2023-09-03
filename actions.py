@@ -1,15 +1,14 @@
 # FastAPI imports
 from fastapi.exceptions import HTTPException
-from fastapi import status, Depends
+from fastapi import status
 from werkzeug.security import generate_password_hash, check_password_hash
 from fastapi_jwt_auth import AuthJWT
-
-from fastapi.encoders import jsonable_encoder
+from datetime import timedelta
 
 # App imports
 from database import Session, engine
 from messages import ErrMessages, SucMessages
-from models import User
+from models import User, Project
 
 
 session = Session(bind=engine)
@@ -60,8 +59,13 @@ def login_action(username: str, password: str):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid username Or password",
         )
-    access_token = AuthJWT().create_access_token(subject=db_user.username)
-    refresh_token = AuthJWT().create_refresh_token(subject=db_user.username)
+    time_limit = timedelta(days=1)
+    access_token = AuthJWT().create_access_token(
+        subject=db_user.username, expires_time=time_limit
+    )
+    refresh_token = AuthJWT().create_refresh_token(
+        subject=db_user.username, expires_time=time_limit
+    )
 
     access_token = access_token
     refresh_token = refresh_token
@@ -72,3 +76,27 @@ def login_action(username: str, password: str):
         "username": db_user.username,
     }
     return response
+
+
+def create_project(
+    user: str,
+    title: str,
+    description: str,
+    project_url: str,
+    image_url: str,
+):
+    new_project = Project(
+        title=title,
+        description=description,
+        project_url=project_url,
+        image_url=image_url,
+    )
+    user = session.query(User).filter(User.username == user).first()
+    new_project.user = user
+    session.add(new_project)
+    session.commit()
+    return new_project.__dict__
+
+
+def update_project(project: Project):
+    pass

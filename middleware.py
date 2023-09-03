@@ -1,10 +1,11 @@
 # Fast API imports
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Response
 from fastapi.responses import JSONResponse as FastAPIJSONResponse
 
 # Python imports
 from http import HTTPStatus
 import json
+from datetime import datetime
 
 # App imports
 
@@ -44,6 +45,7 @@ class CustomJSONResponse(FastAPIJSONResponse):
                     "message": http_code_to_message[self.status_code],
                     "data": content,
                     "error": None,
+                    "server_time": str(datetime.now()),
                 }
             elif self.status_code >= 400:
                 response_data = {
@@ -51,6 +53,7 @@ class CustomJSONResponse(FastAPIJSONResponse):
                     "message": http_code_to_message[self.status_code],
                     "error": content,
                     "data": None,
+                    "server_time": str(datetime.now()),
                 }
 
             content = response_data

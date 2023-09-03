@@ -11,6 +11,7 @@ from actions import (
     register_user,
     login_action,
 )
+from messages import SucMessages
 
 auth_router = APIRouter(
     prefix="/auth",
@@ -37,6 +38,11 @@ async def signup(user: RegisterModel, status_code=status.HTTP_200_OK):
             is_active=user.is_active,
             is_admin=user.is_admin,
         )
+        response = {
+            "message": SucMessages.Suc_User_Registration,
+            "data": {"email": user.email, "username": user.username},
+        }
+        return response
 
     except Exception as e:
         raise HTTPException(
